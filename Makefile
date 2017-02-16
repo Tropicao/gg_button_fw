@@ -16,23 +16,31 @@ BAUDRATE	= 19200
 
 CFLAGS 		= -Wall -Os -Iusbdrv -mmcu=$(DEVICE)
 OBJFLAGS	= -j .text -j .data -O ihex
+
 DUDEFLAGS	= -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -v -U lfuse:w:0xe1:m -U hfuse:w:0xdd:m
 
 OBJECTS		= usbdrv/usbdrv.o usbdrv/oddebug.o usbdrv/usbdrvasm.o main.o
-CMDLINE		= usbtest
+CMDLINE		= ggbuttontest
 
+PROGRAM		= main.hex
 
+all: clean $(PROGRAM) $(CMDLINE) flash
+#all : $(CMDLINE)
 
-all: clean main.hex flash
-
-$(CMDLINE): usbtest.c
-	gcc -I ./libusb/include -L ./libusb/lib/gcc -O -Wall usbtest.c -o usbtest -lusb
-
+$(CMDLINE): ggbuttontest.c
+	gcc -DDEBUG -I ./libusb/include \
+		-I /usr/local/lib \
+	   	-L ./libusb/lib/gcc \
+		-L /usr/local/lib \
+		-O -Wall -lusb -luv $< -o $@
 %.hex: %.elf
 	$(OBJCOPY) $(OBJFLAGS) $< $@
 
 main.elf: $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@
+
+led.elf: led.o
+	$(CC) -Wall -Os -mmcu=$(DEVICE) led.o -o $@
 
 $(OBJECTS): usbdrv/usbconfig.h
 
@@ -42,10 +50,8 @@ $(OBJECTS): usbdrv/usbconfig.h
 %.o: %.S
 	$(CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
-
-
-flash:main.hex
+flash:$(PROGRAM)
 	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
 
 clean:
-	$(RM) *.o *.hex *.elf usbdrv/*.o usbtest
+	$(RM) *.o *.hex *.elf usbdrv/*.o $(CMDLINE)
