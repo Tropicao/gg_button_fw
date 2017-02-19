@@ -12,6 +12,29 @@
 static uint8_t switchState = 0;
 
 /*************************************************
+ * USB HID descriptor
+ ************************************************/
+
+/*
+ * Custom HID descriptor : we want to report one button state, sized on one bit
+ * To understand the set fields, please report to :
+ *  * USB HID device class definition 1.11 : http://www.usb.org/developers/hidpage/HID1_11.pdf
+ *  * USB HID usage tables : http://www.usb.org/developers/hidpage/HID1_11.pdf
+ *  * V-USB example on Automator : https://www.obdev.at/products/vusb/automator.html
+ */
+const PROGMEM char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] =
+{
+    0x06, 0x00, 0xff,   /* USAGE_PAGE(Generic Desktop) */
+    0x09, 0x01,         /* USAGE(Vendor Usage) */
+    0xa1, 0x01,         /* COLLECTION (Application) */
+    0x15, 0x00,         /* LOGICAL_MINIMUM(0) */
+    0x25, 0x01,         /* LOGICAL_MAXIMUM(1) */
+    0x75, 0x01,         /* REPORT_SIZE(1) */
+    0x95, 0x01,         /* REPORT_COUNT(1) */
+    0xc0,
+};
+
+/*************************************************
  * Switch state functions
  ************************************************/
 
