@@ -34,6 +34,8 @@
 
 usb_dev_handle *handle = NULL;
 uv_loop_t loop_data;
+uv_process_t player_handle;
+uv_process_options_t p_options = {0};
 
 // used to get descriptor strings for device identification
 static int usbGetDescriptorString(usb_dev_handle *dev, int index, int langid,
@@ -132,17 +134,19 @@ static void _player_returned_cb(uv_process_t* ev, int64_t exit_code, int term_si
 {
     if(exit_code)
     {
-        DBG("Player finished with status %d", (int)exit_code);
+        DBG("Player finished with status %d\n", (int)exit_code);
     }
+    uv_close((uv_handle_t *) ev, NULL);
 }
 
 static void _main_timer_cb(uv_timer_t *handle_t)
 {
     static char buffer[256]={0};
     static uint8_t firstPush = 1;
-    uv_process_t player_handle;
-    uv_process_options_t p_options;
+    char *args[3];
     int nBytes = 0;
+    int error_code = 0;
+
     nBytes = usb_control_msg(handle,
             USB_TYPE_VENDOR|USB_RECIP_DEVICE|USB_ENDPOINT_IN,
             SWITCH_STATE, 0, 0, buffer, sizeof(buffer), 5000);
@@ -157,13 +161,16 @@ static void _main_timer_cb(uv_timer_t *handle_t)
     {
         firstPush = 0;
         DBG("Switch pushed !!!\n");
-        memset((void *)&p_options, 0, sizeof(p_options));
+        /* Run player to play defined sound */
+        args[0] = PLAYER_COMMAND;
+        args[1] = PLAYER_ARG;
+        args[2] = NULL;
         p_options.exit_cb = _player_returned_cb;
         p_options.file = PLAYER_COMMAND;
-        p_options.args = (char **)&(PLAYER_ARG);
-        if(uv_spawn(&loop_data, &player_handle, &p_options))
+        p_options.args = args;
+        if((error_code = uv_spawn(&loop_data, &player_handle, &p_options)))
         {
-            DBG("Cannot spawn player\n");
+            DBG("Cannot spawn player : %s\n", uv_strerror(error_code));
         }
 
     }
