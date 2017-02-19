@@ -1,0 +1,6 @@
+After a certain amount of time / switch trigger, application will hang and eat your
+CPU...
+Strace indicates that the program is blocked on infinite loop on wait4. The
+problem should be solved considering proper event loop design (asynchronous
+API of libusb should be used for final application to prevent uv main loop
+from getting blocked)
