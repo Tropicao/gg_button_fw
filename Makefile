@@ -17,7 +17,7 @@ BAUDRATE	= 19200
 CFLAGS 		= -Wall -Os -Iusbdrv -mmcu=$(DEVICE)
 OBJFLAGS	= -j .text -j .data -O ihex
 
-DUDEFLAGS	= -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -v -U lfuse:w:0xe1:m -U hfuse:w:0xdd:m
+DUDEFLAGS	= -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -v -U lfuse:w:0xe1:m -U hfuse:w:0xd5:m
 
 OBJECTS		= usbdrv/usbdrv.o usbdrv/oddebug.o usbdrv/usbdrvasm.o main.o
 CMDLINE		= ggbuttontest
