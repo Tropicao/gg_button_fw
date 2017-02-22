@@ -24,7 +24,7 @@ CMDLINE		= ggbuttontest
 
 PROGRAM		= main.hex
 
-all: clean $(PROGRAM) $(CMDLINE) flash
+all: clean $(PROGRAM) $(CMDLINE)
 #all : $(CMDLINE)
 
 $(CMDLINE): ggbuttontest.c
