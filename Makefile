@@ -17,14 +17,16 @@ BAUDRATE	= 19200
 CFLAGS 		= -Wall -Os -Iusbdrv -mmcu=$(DEVICE)
 OBJFLAGS	= -j .text -j .data -O ihex
 
-DUDEFLAGS	= -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -v -U lfuse:w:0xe1:m -U hfuse:w:0xd5:m
+DUDEFLAGS	= -p $(DEVICE) -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -v
+DUDEFUSES 	= -U lfuse:w:0xe1:m -U hfuse:w:0xd5:m
 
 OBJECTS		= usbdrv/usbdrv.o usbdrv/oddebug.o usbdrv/usbdrvasm.o main.o
 CMDLINE		= ggbuttontest
 
 PROGRAM		= main.hex
+PROGRAM_CALIBRATED		= main_calibrated.hex
 
-all: clean $(PROGRAM) $(CMDLINE)
+all: clean $(PROGRAM) $(PROGRAM_CALIBRATED) $(CMDLINE)
 #all : $(CMDLINE)
 
 $(CMDLINE): ggbuttontest.c
@@ -36,7 +38,7 @@ $(CMDLINE): ggbuttontest.c
 %.hex: %.elf
 	$(OBJCOPY) $(OBJFLAGS) $< $@
 
-main.elf: $(OBJECTS)
+%.elf: $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@
 
 led.elf: led.o
@@ -52,6 +54,12 @@ $(OBJECTS): usbdrv/usbconfig.h
 
 flash:$(PROGRAM)
 	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
+
+flash_calibrated:$(PROGRAM_CALIBRATED)
+	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
+
+fuse:
+	$(DUDE) $(DUDEFUSES)
 
 clean:
 	$(RM) *.o *.hex *.elf usbdrv/*.o $(CMDLINE)

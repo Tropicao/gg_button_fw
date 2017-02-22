@@ -83,7 +83,7 @@ USB_PUBLIC uchar usbFunctionSetup(uchar data[8])
 
 //Called by V-USB after device reset
 void hadUsbReset() {
-    int frameLength, targetLength = (unsigned)(1499 * (double)F_CPU / 10.5e6
+    /*int frameLength, targetLength = (unsigned)(1499 * (double)F_CPU / 10.5e6
             + 0.5);
     int bestDeviation = 9999;
     uchar trialCal = 0, bestCal = 0, step = 0, region = 0;
@@ -109,13 +109,14 @@ void hadUsbReset() {
             }
         }
     }
-    OSCCAL = bestCal;
-    eeprom_write_byte(0, OSCCAL);
+    OSCCAL = bestCal;*/
 }
 
 int main()
 {
     uchar i = 0;
+    uint8_t calibrated = eeprom_read_byte(0);
+    OSCCAL = calibrated;
 
     wdt_enable(WDTO_1S);
 
