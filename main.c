@@ -86,14 +86,17 @@ void hadUsbReset() {
     int frameLength, targetLength = (unsigned)(1499 * (double)F_CPU / 10.5e6
             + 0.5);
     int bestDeviation = 9999;
-    uchar trialCal = 0, bestCal = 0, step = 0, region = 0;
+    // IF OSCCAL != 0, it has been calibrated during previous session,
+    // do only a short calibration
+    int initStep = OSCCAL ? 16 : 64;
+    uchar trialCal = OSCCAL, bestCal = 0, step = 0, region = 0;
 
     //do a binary search in regions 0-127 and 128-255 to get optimum OSCCAL
     for(region = 0; region <= 1; region++) {
         frameLength = 0;
         trialCal = (region == 0) ? 0 : 128;
 
-        for(step = 64; step > 0; step >>= 1)
+        for(step = initStep; step > 0; step >>= 1)
         {
             if(frameLength < targetLength) // true for initial iteration
                 trialCal += step; // frequency too low
@@ -116,6 +119,8 @@ void hadUsbReset() {
 int main()
 {
     uchar i = 0;
+    uint8_t calibration = eeprom_read_byte(0);
+    OSCCAL = calibration;
 
     wdt_enable(WDTO_1S);
 

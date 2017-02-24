@@ -24,9 +24,8 @@ OBJECTS		= usbdrv/usbdrv.o usbdrv/oddebug.o usbdrv/usbdrvasm.o main.o
 CMDLINE		= ggbuttontest
 
 PROGRAM		= main.hex
-PROGRAM_CALIBRATED		= main_calibrated.hex
 
-all: clean $(PROGRAM) $(PROGRAM_CALIBRATED) $(CMDLINE)
+all: clean $(PROGRAM) $(CMDLINE)
 #all : $(CMDLINE)
 
 $(CMDLINE): ggbuttontest.c
@@ -53,9 +52,6 @@ $(OBJECTS): usbdrv/usbconfig.h
 	$(CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
 flash:$(PROGRAM)
-	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
-
-flash_calibrated:$(PROGRAM_CALIBRATED)
 	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
 
 fuse:
