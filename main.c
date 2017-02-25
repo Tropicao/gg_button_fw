@@ -25,14 +25,16 @@ static uint8_t switchState = 0;
  */
 const PROGMEM char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] =
 {
-    0x06, 0x00, 0xff,   /* USAGE_PAGE(Generic Desktop) */
-    0x09, 0x01,         /* USAGE(Vendor Usage) */
+    0x05, 0x01,         /* USAGE_PAGE(Generic Desktop) */
+    0x09, 0x00,         /* USAGE(Undefined) */
     0xa1, 0x01,         /* COLLECTION (Application) */
     0x15, 0x00,         /* LOGICAL_MINIMUM(0) */
     0x25, 0x01,         /* LOGICAL_MAXIMUM(1) */
-    0x75, 0x01,         /* REPORT_SIZE(1) */
+    0x75, 0x08,         /* REPORT_SIZE(8) */
     0x95, 0x01,         /* REPORT_COUNT(1) */
-    0xc0,
+    0x09, 0x04,         /* USAGE(Joystick) */
+    0x81, 0x02,         /* INPUT(Data, Var, Abs) */
+    0xc0,               /* End collection */
 };
 
 /*************************************************
