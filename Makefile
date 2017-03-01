@@ -55,7 +55,7 @@ flash:$(PROGRAM)
 	$(DUDE) $(DUDEFLAGS) -U flash:w:$<
 
 fuse:
-	$(DUDE) $(DUDEFUSES)
+	$(DUDE) $(DUDEFLAGS) $(DUDEFUSES)
 
 clean:
 	$(RM) *.o *.hex *.elf usbdrv/*.o $(CMDLINE)
